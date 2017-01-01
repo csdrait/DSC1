@@ -1,0 +1,96 @@
+#include<stdio.h>
+#include<conio.h>
+#include<process.h>
+#define stacksize 50
+#include<string.h>
+int stackprecedence(char symbol);
+int inputprecedence(char symbol);
+
+void push(char item,int *top,char s[])
+{
+	if(*top==stacksize-1)
+	{
+		printf("stack underflow\n");
+		return;
+	}
+	*top=*top+1;
+	s[*top]=item;
+}
+char pop(int *top,char s[])
+{       int item;
+	if(*top==-1)
+		return -1;
+	item=s[*top];
+	*top-=1;
+	return item;
+}
+void infix_to_postfix(char infix[],char postfix[])
+{
+	int n,top,j,i;
+	char s[100],symbol;
+	top=-1;j=0;
+	push('#',&top,s);
+	n=strlen(infix);
+	for(i=0;i<n;i++)
+	{
+		symbol=infix[i];
+		while(stackprecedence(s[top])>inputprecedence(symbol))
+		{
+			postfix[j]=pop(&top,s);
+			j=j+1;
+		}
+		if(stackprecedence(s[top])!=inputprecedence(symbol))
+			push(symbol,&top,s);
+		else
+			pop(&top,s);
+	}
+
+	while(s[top]!='#')
+		{
+			postfix[j]=pop(&top,s);
+			j=j+1;
+		}
+
+	postfix[j]='\0';
+}
+int stackprecedence(char symbol)
+{
+	switch(symbol)
+	{
+		case '+':
+		case '-':return 2;
+		case '*':
+		case '/':return 4;
+		case '^':
+		case '$':return 5;
+		case '(':return 0;
+		case '#':return -1;
+		default:return 8;
+	}
+}
+int inputprecedence(char symbol)
+{
+	switch(symbol)
+	{
+		case '+':
+		case '-':return 1;
+		case '*':
+		case '/':return 3;
+		case '^':return 6;
+		case '(':return 9;
+		case ')':return 0;
+		default:return 7;
+	}
+}
+void main()
+{
+	char infix[50],postfix[50];
+	clrscr();
+	printf("enter the infix expression\n");
+	scanf("%s",infix);
+	infix_to_postfix(infix,postfix);
+	printf("the postfix expression is\n");
+	printf("%s",postfix);
+	getch();
+}
+
